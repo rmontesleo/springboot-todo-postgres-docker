@@ -9,6 +9,8 @@
 
 ## VSCode
 
+- [Debugging](https://code.visualstudio.com/docs/editor/debugging)
+
 - [Environment Variable with Maven](https://stackoverflow.com/questions/5510690/environment-variable-with-maven)
 
 - [Maven for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-maven)

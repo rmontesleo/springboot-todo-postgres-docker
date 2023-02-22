@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+
+  db:
+    image: 'postgres:11'
+    container_name: posgresqldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - springboot-todo-postgres-container-db-volume:/var/lib/posgresql/data
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}" ]
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - 9090:80
+    volumes:
+      - springboot-todo-postgres-container-pgadmin-volume:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+
+  api:
+    #image: 'springboot-todo-postgres-docker:production'
+    build:
+      context: .
+      target: development
+    profiles: [ "backend" ]
+    container_name: api
+    ports:
+      - "8080:9090"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APPLICATION_PORT=${APPLICATION_PORT}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - IS_FORMAT_SQL=${IS_FORMAT_SQL}
+      - IS_SHOW_SQL=${IS_SHOW_SQL}
+      - HOW_ANSI_OUTPUT_IS_ENABLED=${HOW_ANSI_OUTPUT_IS_ENABLED}
+
+volumes:
+  springboot-todo-postgres-container-db-volume:
+  springboot-todo-postgres-container-pgadmin-volume:
+
+
+networks:
+  default:
+    name: springboot-todo-postgres-container-network

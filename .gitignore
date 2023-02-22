@@ -33,5 +33,13 @@ build/
 .vscode/
 
 
+### Environment Variables ###
 .env
-variables
+.env_variables
+.env_container
+.env_compose
+
+
+### Ignore override compose configurations ###
+docker-compose.override.yaml
+docker-compose.override.yml
